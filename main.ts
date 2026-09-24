@@ -72,6 +72,25 @@ namespace MCarBotBasic {
         LF_Sensor_Left = i2cReadBuffer_sensors.getNumber(NumberFormat.UInt8LE, 1);
         // return i2cReadBuffer[2];
     }
+    //% block="Turn On LF Led"
+    //% group='Line Follower'
+    export function turnOnLfLed() {
+        i2cWriteCommand(30, 3, 0, 0, 0, 0, 0, 0);
+    }
+    //% block="Turn Off LF Led"
+    //% group='Line Follower'
+    export function turnOffLfLed() {
+        i2cWriteCommand(30, 4, 0, 0, 0, 0, 0, 0);
+    }
+    //% block="Read LF Sensors Enhanced"
+    //% group='Line Follower'
+    export function readLfSensorsEnhanced() {
+        i2cWriteCommand(30, 5, 0, 0, 0, 0, 0, 0);
+        let i2cReadBuffer_sensors = i2cReadCommand();
+        LF_Sensor_Right = i2cReadBuffer_sensors.getNumber(NumberFormat.UInt8LE, 0);
+        LF_Sensor_Left = i2cReadBuffer_sensors.getNumber(NumberFormat.UInt8LE, 1);
+        // return i2cReadBuffer[2];
+    }
     //% block='Set Motor:$motor Dir:$dir Speed:$speed'
     //% speed.defl=100
     //% speed.min=0 speed.max=100
