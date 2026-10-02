@@ -19,16 +19,18 @@ namespace MCarBotBasic {
     //% block="McarBot Init"
     //% group="General"
     export function McarBotInit() {
-        i2cWriteCommand(1, 1, 0, 0, 0, 0, 0, 0);
+        // i2cWriteCommand(1, 1, 0, 0, 0, 0, 0, 0);
+        uartWriteCommand(1, 1, 0, 0, 0, 0, 0, 0);
+
     }
     //% block='McarBot Reset'
     //% group='General'
     export function McarBotReset() {
         // i2cWriteCommand(1, 2, 0, 0, 0, 0, 0, 0);
-        pins.digitalWritePin(DigitalPin.P0, 0)
-        basic.pause(100)
-        pins.digitalWritePin(DigitalPin.P0, 1)
-
+        pins.digitalWritePin(DigitalPin.P0, 0);
+        basic.pause(100);
+        pins.digitalWritePin(DigitalPin.P0, 1);
+        uartInit();
     }
     //% block='LED:$led R:$red G:$green B:$blue'
     //% inlineInputMode=inline
@@ -40,7 +42,9 @@ namespace MCarBotBasic {
     //% blue.min=0 blue.max=1
     //% group='RGB LED'
     export function setLed(led: Led, red: number, green: number, blue: number) {
-        i2cWriteCommand(10, led as number, red, green, blue, 0, 0, 0);
+        // i2cWriteCommand(10, led as number, red, green, blue, 0, 0, 0);
+        uartWriteCommand(10, led as number, red, green, blue, 0, 0, 0);
+
         // let i2cReadBuffer = i2cReadCommand();
         // return i2cReadBuffer.getNumber(NumberFormat.UInt8LE, 2);
     }
@@ -75,12 +79,16 @@ namespace MCarBotBasic {
     //% block="Turn On LF Led"
     //% group='Line Follower'
     export function turnOnLfLed() {
-        i2cWriteCommand(30, 3, 0, 0, 0, 0, 0, 0);
+        // i2cWriteCommand(30, 3, 0, 0, 0, 0, 0, 0);
+        uartWriteCommand(30, 3, 0, 0, 0, 0, 0, 0);
+
     }
     //% block="Turn Off LF Led"
     //% group='Line Follower'
     export function turnOffLfLed() {
-        i2cWriteCommand(30, 4, 0, 0, 0, 0, 0, 0);
+        // i2cWriteCommand(30, 4, 0, 0, 0, 0, 0, 0);
+        uartWriteCommand(30, 4, 0, 0, 0, 0, 0, 0);
+
     }
     //% block="Read LF Sensors Enhanced"
     //% group='Line Follower'
@@ -96,13 +104,17 @@ namespace MCarBotBasic {
     //% speed.min=0 speed.max=100
     //% group='Moves'
     export function setMotor(motor: Motor, dir: Dir, speed: number): void {
-        i2cWriteCommand(20, motor as number, speed, dir as number, 0, 0, 0, 0);
+        //i2cWriteCommand(20, motor as number, speed, dir as number, 0, 0, 0, 0);
+        uartWriteCommand(20, motor as number, speed, dir as number, 0, 0, 0, 0);
+
         // let i2cReadBuffer_motors_start = i2cReadCommand();
     }
     //% block = "Stop Motors"
     //% group='Moves'
     export function StopMotors() {
-        i2cWriteCommand(20, 4, 0, 0, 0, 0, 0, 0);
+        // i2cWriteCommand(20, 4, 0, 0, 0, 0, 0, 0);
+        uartWriteCommand(20, 4, 0, 0, 0, 0, 0, 0);
+
         //let i2cReadBuffer_motors_stop = i2cReadCommand();
     }
     //% block='Set Left Wheel Speed:$leftSpeed Right Wheel Speed:$rightSpeed'
@@ -132,7 +144,9 @@ namespace MCarBotBasic {
             right_direction = Dir.Backward
             right_speed = rightSpeed * -1
         }
-        i2cWriteCommand(20, 5, left_speed, left_direction as number, right_speed, right_direction as number, 0, 0);
+        // i2cWriteCommand(20, 5, left_speed, left_direction as number, right_speed, right_direction as number, 0, 0);
+        uartWriteCommand(20, 5, left_speed, left_direction as number, right_speed, right_direction as number, 0, 0);
+
         //let i2cReadBuffer_speed_start = i2cReadCommand();
     }
     // note that Caml casing yields lower case
@@ -156,4 +170,20 @@ namespace MCarBotBasic {
     function i2cReadCommand() {
         return pins.i2cReadBuffer(getRpAddress(), 2, false);
     }
+    function uartInit() {
+        serial.redirect(SerialPin.P8, SerialPin.P16, BaudRate.BaudRate115200);
+    }
+    function uartWriteCommand(commandId: number, subCommandId: number, arg1: number, arg2: number, arg3: number, arg4: number, arg5: number, arg6: number) {
+        let uartCommandBuffer = pins.createBuffer(6);
+        uartCommandBuffer.setNumber(NumberFormat.UInt8LE, 0, commandId);
+        uartCommandBuffer.setNumber(NumberFormat.UInt8LE, 1, subCommandId);
+        uartCommandBuffer.setNumber(NumberFormat.UInt8LE, 2, arg1);
+        uartCommandBuffer.setNumber(NumberFormat.UInt8LE, 3, arg2);
+        uartCommandBuffer.setNumber(NumberFormat.UInt8LE, 4, arg3);
+        uartCommandBuffer.setNumber(NumberFormat.UInt8LE, 5, arg4);
+        //writeCommandBuffer.setNumber(NumberFormat.UInt8LE, 6, arg5);
+        //writeCommandBuffer.setNumber(NumberFormat.UInt8LE, 7, arg6);
+        serial.writeBuffer(uartCommandBuffer);
+    }
+
 }
