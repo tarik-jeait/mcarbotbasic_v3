@@ -184,7 +184,9 @@ namespace MCarBotBasic {
         //writeCommandBuffer.setNumber(NumberFormat.UInt8LE, 6, arg5);
         //writeCommandBuffer.setNumber(NumberFormat.UInt8LE, 7, arg6);
         // serial.writeBuffer(uartCommandBuffer);
-        let string_command = convertToText(commandId)+"_"+convertToText(subCommandId)+"_"+convertToText(arg1);
+        serial.setWriteLinePadding(10);
+        serial.setTxBufferSize(1024);        
+        let string_command = convertToText(commandId) + "_" + convertToText(subCommandId) + "_" + convertToText(arg1) + "_" + convertToText(arg2) + "_" + convertToText(arg3) + "_" + convertToText(arg4);
         serial.writeLine(string_command);
     }
 
