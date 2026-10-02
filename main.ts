@@ -183,7 +183,8 @@ namespace MCarBotBasic {
         uartCommandBuffer.setNumber(NumberFormat.UInt8LE, 5, arg4);
         //writeCommandBuffer.setNumber(NumberFormat.UInt8LE, 6, arg5);
         //writeCommandBuffer.setNumber(NumberFormat.UInt8LE, 7, arg6);
-        serial.writeBuffer(uartCommandBuffer);
+        // serial.writeBuffer(uartCommandBuffer);
+        serial.writeLine(convertToText(uartCommandBuffer));
     }
 
 }
